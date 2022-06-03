@@ -1,31 +1,46 @@
+import java.awt.Point;
+
 public class Vertex {
-    Point point;
-    int occupant;
-    boolean currentlyValid;
 
-    Vertex(int xCoordinate, int yCoordinate, int occupant){
-        this.currentlyValid = false;
-        this.point = new Point(xCoordinate, yCoordinate);
-        this.occupant = occupant;
-    }
+	public int content;
+	private Point point;
+	private boolean visited;
 
-    public boolean isCurrentlyValid() {
-        return currentlyValid;
-    }
+	public Vertex(Point l) {
+		this(l, 0);
+	}
 
-    public void setCurrentlyValid(boolean currentlyValid){
-        this.currentlyValid = currentlyValid;
-    }
+	public Vertex(Point point, int content) {
+		this.point = point;
+		this.content = content;
+		this.visited = false;
+	}
 
-    public Point getPoint() {
-        return point;
-    }
+	public Point getLocation() {
+		return this.point;
+	}
 
-    public int getOccupant() {
-        return occupant;
-    }
+	public int getContent() {
+		return this.content;
+	}
 
-    public void setOccupant(int occupant) {
-        this.occupant = occupant;
-    }
+	public boolean isVisited() {
+		return visited;
+	}
+
+	public void setVisited(boolean visited) {
+		this.visited = visited;
+	}
+
+
+	/* 
+	@Override
+	public boolean equals(Object v) {
+		return ((CellVertex) v).hashCode() == this.hashCode();
+	}
+
+	@Override
+	public int hashCode() {
+		return (this.l.y*GraphFacilities.W)+this.l.x;
+	}*/
 }
