@@ -89,7 +89,7 @@ public class GUI extends JFrame implements Runnable {
         // System.out.println("Hello world");
         // JOptionPane.showMessageDialog(null, "Hello world");
 
-        new GUI("Batta Checker Game");
+        new GUI("Chinese Checker");
 
     }
 
