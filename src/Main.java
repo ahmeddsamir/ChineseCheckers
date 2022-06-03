@@ -1,6 +1,8 @@
 public class Main {
     public static void main(String[] args){
-        Vertex[][] gameBoard = Board.initBoard();
+        Board board = new Board();
+        Vertex[][] gameBoard = board.initBoard();
+        board.drawBoard();
     }
 }
 
