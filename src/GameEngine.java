@@ -107,20 +107,20 @@ public final class GameEngine {
             for (int j = 0; j < logicMat[i].length; j++) {
                 if (this.board[i][j] == null) {
                     if (logicMat[i][j] == 1) {    //Computer
-                        this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.COMPUTER);
+                        this.board[i][j] = new Vertex(new Point(j, i), PlayerType.COMPUTER);
                     } else if (logicMat[i][j] == 2) {    //Player
-                        this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.PLAYER);
+                        this.board[i][j] = new Vertex(new Point(j, i), PlayerType.PLAYER);
                     } else if (logicMat[i][j] == 0) {    //Empty
-                        this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.NONE);
+                        this.board[i][j] = new Vertex(new Point(j, i), PlayerType.NONE);
                     } else { //Out of the star
-                        this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.OUTSIDE);
+                        this.board[i][j] = new Vertex(new Point(j, i), PlayerType.OUTSIDE);
                     }
                 }
             }
         }
 
         tempX = tempY = level = 0;
-        activePlayer = PlayerEnum.PLAYER;    //Player stars first
+        activePlayer = PlayerType.PLAYER;    //Player stars first
     }
 
     public void gameStart() {
@@ -306,7 +306,7 @@ public final class GameEngine {
     }
 
     void move(int destX, int destY) {
-        board[tempY][tempX].setOccupant(PlayerEnum.NONE);
+        board[tempY][tempX].setOccupant(PlayerType.NONE);
         board[destY][destX].setOccupant(activePlayer);
     }
 
@@ -320,7 +320,7 @@ public final class GameEngine {
         }
 
 
-        tmpBoard[srcY][srcX].setOccupant(PlayerEnum.NONE);
+        tmpBoard[srcY][srcX].setOccupant(PlayerType.NONE);
         tmpBoard[destY][destX].setOccupant(1);
         return tmpBoard;
     }

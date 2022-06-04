@@ -5,11 +5,11 @@ import java.awt.Point;
 import javax.swing.JPanel;
 
 
-public class BackJPanel extends JPanel {
+public class Background extends JPanel {
 	private Point p;
 	private Image img;
 	
-	public BackJPanel(Image img , Point p){
+	public Background(Image img , Point p){
 		this.p = p;
 		this.img=img;
 	}

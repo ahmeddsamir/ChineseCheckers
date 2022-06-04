@@ -13,8 +13,8 @@ public class GUI extends JFrame implements Runnable {
     private final double PLAYER_OFFSET_Y = -110, PLAYER_OFFSET_X = -118; //-15, -5
 
     private Image img, redMarble, blueMarble, empty, optional;
-    private BackJPanel[][] graphicMat;
-    private BackJPanel background;
+    private Background[][] graphicMat;
+    private Background background;
     private GameEngine gameEngine;
     private Thread thread;
     private JFrame mainFrame; 
@@ -30,7 +30,7 @@ public class GUI extends JFrame implements Runnable {
 
         img = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/board.png"))).getImage();
 
-        background = new BackJPanel(img, null);
+        background = new Background(img, null);
         background.setLayout(null);
         background.setBounds(0, 0, 720, 800);   //800
         background.addMouseListener(new MouseAction());
@@ -43,21 +43,21 @@ public class GUI extends JFrame implements Runnable {
         optional = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/optional.png"))).getImage();
 
         empty = null;
-        graphicMat = new BackJPanel[gameEngine.H][gameEngine.W];
+        graphicMat = new Background[gameEngine.H][gameEngine.W];
 
         for (int i = 0; i < gameEngine.H; i++) {
             for (int j = 0; j < gameEngine.W; j++) {
                 if (gameEngine.board[i][j] != null) {
                     switch (gameEngine.board[i][j].getOccupant()) {
-                        case PlayerEnum.COMPUTER:
-                            graphicMat[i][j] = new BackJPanel(redMarble, new Point(j, i));
+                        case PlayerType.COMPUTER:
+                            graphicMat[i][j] = new Background(redMarble, new Point(j, i));
                             break;
-                        case PlayerEnum.PLAYER:
-                            graphicMat[i][j] = new BackJPanel(blueMarble, new Point(j, i));
+                        case PlayerType.PLAYER:
+                            graphicMat[i][j] = new Background(blueMarble, new Point(j, i));
                             break;
                         default:
                           
-                            graphicMat[i][j] = new BackJPanel(empty, new Point(j, i));
+                            graphicMat[i][j] = new Background(empty, new Point(j, i));
                             break;
                     }
 
@@ -143,12 +143,12 @@ public class GUI extends JFrame implements Runnable {
                         if(gameEngine.playerWon()){
                             JOptionPane.showMessageDialog(null, "Player Won!", "InfoBox: " + "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
                         }
-                        gameEngine.setActivePlayer(PlayerEnum.COMPUTER);
+                        gameEngine.setActivePlayer(PlayerType.COMPUTER);
 
                         gameEngine.makeBestMove();
 
                         updateGame();
-                        gameEngine.setActivePlayer(PlayerEnum.PLAYER);
+                        gameEngine.setActivePlayer(PlayerType.PLAYER);
 
                         
                     }
@@ -196,10 +196,10 @@ public class GUI extends JFrame implements Runnable {
             for (int j = 0; j < gameEngine.W; j++) {
                 if (gameEngine.board[i][j] != null) {
                     switch (gameEngine.board[i][j].getOccupant()) {
-                        case PlayerEnum.COMPUTER:
+                        case PlayerType.COMPUTER:
                             graphicMat[i][j].setImg(redMarble);
                             break;
-                        case PlayerEnum.PLAYER:
+                        case PlayerType.PLAYER:
                             graphicMat[i][j].setImg(blueMarble);
                             break;
                         default:    //PlayerEnum.NONE
