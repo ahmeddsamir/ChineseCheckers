@@ -2,7 +2,7 @@ import java.awt.Point;
 
 public class Vertex {
 
-	public int content;
+	public int occupant;
 	private Point point;
 	private boolean visited;
 
@@ -10,18 +10,22 @@ public class Vertex {
 		this(l, 0);
 	}
 
-	public Vertex(Point point, int content) {
+	public Vertex(Point point, int occupant) {
 		this.point = point;
-		this.content = content;
+		this.occupant = occupant;
 		this.visited = false;
 	}
 
-	public Point getLocation() {
+	public Point getPoint() {
 		return this.point;
 	}
 
-	public int getContent() {
-		return this.content;
+	public int getOccupant() {
+		return this.occupant;
+	}
+
+	public void setOccupant(int occupant) {
+		this.occupant = occupant;
 	}
 
 	public boolean isVisited() {

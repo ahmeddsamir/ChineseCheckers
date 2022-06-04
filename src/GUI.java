@@ -10,7 +10,7 @@ import javax.swing.*;
 
 public class GUI extends JFrame implements Runnable {
 
-    private final double DIF_H = 47, DIF_W = 27.5, OFFSET_Y = -94, OFFSET_X = -108; //-15, -5
+    private final double DIF_H = 47, DIF_W = 27.5, OFFSET_Y = 1, OFFSET_X = 2; //-15, -5
     private final double PLAYER_OFFSET_Y = -110, PLAYER_OFFSET_X = -118; //-15, -5
 
     private Image img, redMarble, blueMarble, empty, optional;
@@ -24,7 +24,7 @@ public class GUI extends JFrame implements Runnable {
 
     public GUI(String text) throws IOException {
         mainFrame = new JFrame(text);
-        mainFrame.setSize(787, 890);
+        mainFrame.setSize(800, 110);
         mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         game = new Game();
@@ -48,8 +48,8 @@ public class GUI extends JFrame implements Runnable {
 
         for (int i = 0; i < game.H; i++) {
             for (int j = 0; j < game.W; j++) {
-                if (game.vertexMat[i][j] != null) {
-                    switch (game.vertexMat[i][j].getContent()) {
+                if (game.board[i][j] != null) {
+                    switch (game.board[i][j].getOccupant()) {
                         case PlayerEnum.COMPUTER:
                             graphicMat[i][j] = new BackJPanel(redMarble, new Point(j, i));
                             break;
@@ -114,7 +114,7 @@ public class GUI extends JFrame implements Runnable {
                         JOptionPane.CLOSED_OPTION, JOptionPane.INFORMATION_MESSAGE);
             } else {
                 if (game.getPlayer() == 2) { // Player
-                    if (game.vertexMat[row][col].content == game.getPlayer()) {
+                    if (game.board[row][col].getOccupant() == game.getPlayer()) {
                         //System.out.println(col + ", " + row);
                         
                         clearOptionals();   //Clearing all optional vertices
@@ -122,21 +122,21 @@ public class GUI extends JFrame implements Runnable {
                         game.setTempX(col); // x
                         game.setTempY(row); // y
                         // cc.resetBoard();
-                        availableVertices = game.availableMoves(game.getTempX(), game.getTempY());
+                        availableVertices = game.checkForPossibleMoves(game.getTempX(), game.getTempY());
                                              
                         for (int i = 0; i < availableVertices.size(); i++) {
-                            int x = (int) availableVertices.get(i).getLocation().getX();
-                            int y = (int) availableVertices.get(i).getLocation().getY();
+                            int x = (int) availableVertices.get(i).getPoint().getX();
+                            int y = (int) availableVertices.get(i).getPoint().getY();
                             graphicMat[y][x].setImg(optional);
                         }
 
                         mainFrame.repaint();
 
-                    } else if (game.vertexMat[row][col].content == 0) {   //Move Vertix to empty cell
+                    } else if (game.board[row][col].getOccupant() == 0) {   //Move Vertix to empty cell
 
                         for (int i = 0; i < availableVertices.size(); i++) {
-                            int x = (int) availableVertices.get(i).getLocation().getX();
-                            int y = (int) availableVertices.get(i).getLocation().getY();
+                            int x = (int) availableVertices.get(i).getPoint().getX();
+                            int y = (int) availableVertices.get(i).getPoint().getY();
 
                             if (row == y && col == x) { //Vertix exists
                                 //System.out.println("exists");
@@ -185,8 +185,8 @@ public class GUI extends JFrame implements Runnable {
 
     public void clearOptionals() {
         for (int i = 0; i < availableVertices.size(); i++) {
-            int x = (int) availableVertices.get(i).getLocation().getX();
-            int y = (int) availableVertices.get(i).getLocation().getY();
+            int x = (int) availableVertices.get(i).getPoint().getX();
+            int y = (int) availableVertices.get(i).getPoint().getY();
             graphicMat[y][x].setImg(empty);
         }
 
@@ -196,8 +196,8 @@ public class GUI extends JFrame implements Runnable {
     public void updateGame() {
         for (int i = 0; i < game.H; i++) {
             for (int j = 0; j < game.W; j++) {
-                if (game.vertexMat[i][j] != null) {
-                    switch (game.vertexMat[i][j].getContent()) {
+                if (game.board[i][j] != null) {
+                    switch (game.board[i][j].getOccupant()) {
                         case PlayerEnum.COMPUTER:
                             graphicMat[i][j].setImg(redMarble);
                             break;

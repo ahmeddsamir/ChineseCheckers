@@ -1,10 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -16,8 +13,8 @@ public final class Game {
 	private boolean run = false;
 
 
-	public static final int H = 21, W = 33;
-	public static Vertex[][] vertexMat = new Vertex[H][W];
+	public static final int H = 17, W = 25;
+	public static Vertex[][] board = new Vertex[H][W];
 
 	private final int[][] win = {
 			{ 0, 12 },
@@ -34,27 +31,23 @@ public final class Game {
 	private int tempX = 0, tempY = 0, activePlayer = 2, level;
 	// public static GraphFacilities graph;
 	private int[][] logicMat = {
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 1, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 1, 9, 1, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 2, 9, 2, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 2, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
-			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9 },
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 1, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 1, 9, 1, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+			{0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0},
+			{9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9},
+			{9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9},
+			{9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9},
+			{9, 9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9, 9},
+			{9, 9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9, 9},
+			{9, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 9},
+			{9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9},
+			{0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0},
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 2, 9, 2, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 2, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
+			{9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
 	};
 	// private Point[][] coordMat;
 	private Point[] cpuSoldiers = new Point[] {
@@ -74,15 +67,15 @@ public final class Game {
 	public Game() {
 		for (int i = 0; i < logicMat.length; i++) {
 			for (int j = 0; j < logicMat[i].length; j++) {
-				if (this.vertexMat[i][j] == null) {
+				if (this.board[i][j] == null) {
 					if (logicMat[i][j] == 1) {	//Computer
-						this.vertexMat[i][j] = new Vertex(new Point(j, i), PlayerEnum.COMPUTER);
+						this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.COMPUTER);
 					} else if (logicMat[i][j] == 2) {	//Player
-						this.vertexMat[i][j] = new Vertex(new Point(j, i), PlayerEnum.PLAYER);
+						this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.PLAYER);
 					} else if (logicMat[i][j] == 0) {	//Empty
-						this.vertexMat[i][j] = new Vertex(new Point(j, i), PlayerEnum.NONE);
+						this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.NONE);
 					}else { //Out of the star
-						this.vertexMat[i][j] = null;
+						this.board[i][j] = new Vertex(new Point(j, i), PlayerEnum.OUTSIDE);
 					}
 				}
 			}
@@ -149,7 +142,7 @@ public final class Game {
 	}
 
 	// Getting all possible next moves
-	public ArrayList<Vertex> availableMoves(int x, int y) {
+	/*public ArrayList<Vertex> availableMoves(int x, int y) {
 
 		ArrayList<Vertex> availableVertices = new ArrayList<Vertex>();
 
@@ -191,64 +184,121 @@ public final class Game {
 		}
 
 		return jump(availableVertices, x, y);
-	}
+	}*/
+
+
+	public ArrayList<Vertex> checkForPossibleMoves(int x, int y){
+		ArrayList<Vertex> valid = new ArrayList<>();
+        ArrayList<Vertex> endPoints = new ArrayList<>();
+        Vertex currentVertex;
+        if(y > 0 && x > 0 && board[y-1][x-1].getOccupant() == 0){
+            valid.add(board[y-1][x-1]);
+        }
+        if(y > 0 && x < 23 && board[y-1][x+1].getOccupant() == 0){
+            valid.add(board[y-1][x+1]);
+        }
+        if(x > 1 && board[y][x-2].getOccupant() == 0){
+            valid.add(board[y][x-2]);
+        }
+        if(x > 0 && y < 16 && board[y+1][x-1].getOccupant() == 0){
+            valid.add(board[y+1][x-1]);
+        }
+        if(x < 22 && board[y][x+2].getOccupant() == 0){
+            valid.add(board[y][x+2]);
+        }
+        if(x < 23 && y < 16 && board[y+1][x+1].getOccupant() == 0){
+            valid.add(board[y+1][x+1]);
+        }
+        //set of vertices
+        /*while(!valid.isEmpty()){
+            currentVertex = valid.poll();
+            if(currentVertex.getOccupant() == 0){
+                endPoints.add(currentVertex);
+            }
+            else if (currentVertex.getOccupant() != -1){
+                int currentX = (int)currentVertex.getPoint().getX();
+                int currentY = (int)currentVertex.getPoint().getY();
+                if(currentY > 0 && currentX > 0){
+                    valid.add(board[currentX-1][currentY-1]);
+                }
+                if(currentY > 0 && currentX < 23){
+                    valid.add(board[currentY-1][currentX+1]);
+                }
+                if(currentX > 1){
+                    valid.add(board[currentY][currentX-2]);
+                }
+                if(currentX > 0 && currentY < 16){
+                    valid.add(board[currentY+1][currentX-1]);
+                }
+                if(currentX < 22){
+                    valid.add(board[currentY][currentX+2]);
+                }
+                if(currentX < 23 && currentY < 16){
+                    valid.add(board[currentY+1][currentX+1]);
+                }
+            }
+        }*/
+        return jump(valid, x, y);
+    }
+
+
 
 	ArrayList<Vertex> jump(ArrayList<Vertex> availableVertices, int x, int y) {
-		Vertex JTopRight = vertexMat[y-2][x+2];
-		Vertex JTopLeft = vertexMat[y-2][x-2];
-		Vertex JRight = vertexMat[y][x+4];
-		Vertex JLeft = vertexMat[y][x-4];
-		Vertex JBottomRight = vertexMat[y+2][x+2];
-		Vertex JBottomLeft = vertexMat[y+2][x-2];
+		Vertex JTopRight = board[y-2][x+2];
+		Vertex JTopLeft = board[y-2][x-2];
+		Vertex JRight = board[y][x+4];
+		Vertex JLeft = board[y][x-4];
+		Vertex JBottomRight = board[y+2][x+2];
+		Vertex JBottomLeft = board[y+2][x-2];
 
-		Vertex topRight = vertexMat[y-1][x+1];
-		Vertex topLeft = vertexMat[y-1][x-1];
-		Vertex right = vertexMat[y][x+2];
-		Vertex left = vertexMat[y][x-2];
-		Vertex bottomRight = vertexMat[y+1][x+1];
-		Vertex bottomLeft = vertexMat[y+1][x-1];
+		Vertex topRight = board[y-1][x+1];
+		Vertex topLeft = board[y-1][x-1];
+		Vertex right = board[y][x+2];
+		Vertex left = board[y][x-2];
+		Vertex bottomRight = board[y+1][x+1];
+		Vertex bottomLeft = board[y+1][x-1];
 
 		//Law hanbd2 mn topRight, topLeft, Right haydrb: 3lshan homa ely fe el awel m3rfsh leh
-		if (topRight != null && JTopRight != null && topRight.content != 0 && JTopRight.content == 0 && !JTopRight.isVisited()) {
-			vertexMat[y-2][x+2].setVisited(true);
-			System.out.println("topRight: "+  topRight.getLocation());
+		if (topRight != null && JTopRight != null && topRight.getOccupant() != 0 && JTopRight.getOccupant() == 0 && !JTopRight.isVisited()) {
+			board[y-2][x+2].setVisited(true);
+			System.out.println("topRight: "+  topRight.getPoint());
 			availableVertices.add(JTopRight);
-			availableVertices = jump(availableVertices, JTopRight.getLocation().x, JTopRight.getLocation().y);
+			availableVertices = jump(availableVertices, JTopRight.getPoint().x, JTopRight.getPoint().y);
 		}
 
-		if (topLeft != null && JTopLeft != null && topLeft.content != 0 && JTopLeft.content == 0 && !JTopLeft.isVisited()) {
-			vertexMat[y-2][x-2].setVisited(true);
-			System.out.println("topLeft: "+  topLeft.getLocation());
+		if (topLeft.getOccupant() != -1 && JTopLeft != null && topLeft.getOccupant() != 0 && JTopLeft.getOccupant() == 0 && !JTopLeft.isVisited()) {
+			board[y-2][x-2].setVisited(true);
+			System.out.println("topLeft: "+  topLeft.getPoint());
 			availableVertices.add(JTopLeft);
-			availableVertices = jump(availableVertices, JTopLeft.getLocation().x, JTopLeft.getLocation().y);
+			availableVertices = jump(availableVertices, JTopLeft.getPoint().x, JTopLeft.getPoint().y);
 		}
 
-		if (right != null && JRight != null && right.content != 0 && JRight.content == 0 && !JRight.isVisited()) {
-			vertexMat[y][x+4].setVisited(true);
-			System.out.println("right: "+  right.getLocation());
+		if (right.getOccupant() != -1 && JRight.getOccupant() != -1 && right.getOccupant() != 0 && JRight.getOccupant() == 0 && !JRight.isVisited()) {
+			board[y][x+4].setVisited(true);
+			System.out.println("right: "+  right.getPoint());
 			availableVertices.add(JRight);
-			availableVertices = jump(availableVertices, JRight.getLocation().x, JRight.getLocation().y);
+			availableVertices = jump(availableVertices, JRight.getPoint().x, JRight.getPoint().y);
 		}
 
-		if (left != null && JLeft != null && left.content != 0 && JLeft.content == 0 && !JLeft.isVisited()) {
-			vertexMat[y][x-4].setVisited(true);
-			System.out.println("left: "+  left.getLocation());
+		if (left.getOccupant() != -1 && JLeft.getOccupant() != -1 && left.getOccupant() != 0 && JLeft.getOccupant() == 0 && !JLeft.isVisited()) {
+			board[y][x-4].setVisited(true);
+			System.out.println("left: "+  left.getPoint());
 			availableVertices.add(JLeft);
-			availableVertices = jump(availableVertices, JLeft.getLocation().x, JLeft.getLocation().y);
+			availableVertices = jump(availableVertices, JLeft.getPoint().x, JLeft.getPoint().y);
 		}
 
-		if (bottomRight != null && JBottomRight != null && bottomRight.content != 0 && JBottomRight.content == 0 && !JBottomRight.isVisited()) {
-			vertexMat[y+2][x+2].setVisited(true);
-			System.out.println("bottomRight: "+  bottomRight.getLocation());
+		if (bottomRight.getOccupant() != -1 && JBottomRight.getOccupant() != -1 && bottomRight.getOccupant() != 0 && JBottomRight.getOccupant() == 0 && !JBottomRight.isVisited()) {
+			board[y+2][x+2].setVisited(true);
+			System.out.println("bottomRight: "+  bottomRight.getPoint());
 			availableVertices.add(JBottomRight);
-			availableVertices = jump(availableVertices, JBottomRight.getLocation().x, JBottomRight.getLocation().y);
+			availableVertices = jump(availableVertices, JBottomRight.getPoint().x, JBottomRight.getPoint().y);
 		}
 
-		if (bottomLeft != null && JBottomLeft != null && bottomLeft.content != 0 && JBottomLeft.content == 0 && !JBottomLeft.isVisited()) {
-			vertexMat[y+2][x-2].setVisited(true);
-			System.out.println("bottomLeft: "+  bottomLeft.getLocation());
+		if (bottomLeft.getOccupant() != -1 && JBottomLeft.getOccupant() != -1 && bottomLeft.getOccupant() != 0 && JBottomLeft.getOccupant() == 0 && !JBottomLeft.isVisited()) {
+			board[y+2][x-2].setVisited(true);
+			System.out.println("bottomLeft: "+  bottomLeft.getPoint());
 			availableVertices.add(JBottomLeft);
-			availableVertices = jump(availableVertices, JBottomLeft.getLocation().x, JBottomLeft.getLocation().y);
+			availableVertices = jump(availableVertices, JBottomLeft.getPoint().x, JBottomLeft.getPoint().y);
 		}
 
 		reset();
@@ -258,16 +308,16 @@ public final class Game {
 	public void reset() {
 		for (int i = 0; i < this.H; i++) {
 			for (int j = 0; j < this.W; j++) {
-				if (vertexMat[i][j] != null && vertexMat[i][j].isVisited()) {
-					vertexMat[i][j].setVisited(false);
+				if (board[i][j] != null && board[i][j].isVisited()) {
+					board[i][j].setVisited(false);
 				}
 			}
 		}
 	}
 
 	void move(int destX, int destY) {
-		vertexMat[tempY][tempX].content = PlayerEnum.NONE;
-		vertexMat[destY][destX].content = activePlayer;
+		board[tempY][tempX].setOccupant(PlayerEnum.NONE);
+		board[destY][destX].setOccupant(activePlayer);
 	}
 
 	/*boolean hasWon() {
