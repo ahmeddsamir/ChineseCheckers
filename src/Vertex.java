@@ -5,6 +5,7 @@ public class Vertex {
 	public int occupant;
 	private Point point;
 	private boolean visited;
+	private boolean allowedToMove;
 
 	public Vertex(Point l) {
 		this(l, 0);
@@ -14,6 +15,7 @@ public class Vertex {
 		this.point = point;
 		this.occupant = occupant;
 		this.visited = false;
+		allowedToMove = true;
 	}
 
 	public Point getPoint() {
@@ -28,6 +30,14 @@ public class Vertex {
 		this.occupant = occupant;
 	}
 
+	public boolean isAllowedToMove(){
+		return allowedToMove;
+	}
+
+	public void setAllowedToMove(boolean allowedToMove) {
+		this.allowedToMove = allowedToMove;
+	}
+
 	public boolean isVisited() {
 		return visited;
 	}
@@ -36,15 +46,4 @@ public class Vertex {
 		this.visited = visited;
 	}
 
-
-	/* 
-	@Override
-	public boolean equals(Object v) {
-		return ((CellVertex) v).hashCode() == this.hashCode();
-	}
-
-	@Override
-	public int hashCode() {
-		return (this.l.y*GraphFacilities.W)+this.l.x;
-	}*/
 }

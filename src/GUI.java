@@ -15,7 +15,7 @@ public class GUI extends JFrame implements Runnable {
     private Image img, redMarble, blueMarble, empty, optional;
     private BackJPanel[][] graphicMat;
     private BackJPanel background;
-    private Game game;
+    private GameEngine gameEngine;
     private Thread thread;
     private JFrame mainFrame; 
     ArrayList<Vertex> availableVertices;
@@ -26,7 +26,7 @@ public class GUI extends JFrame implements Runnable {
         mainFrame.setSize(800, 110);
         mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        game = new Game();
+        gameEngine = new GameEngine();
 
         img = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/board.png"))).getImage();
 
@@ -43,12 +43,12 @@ public class GUI extends JFrame implements Runnable {
         optional = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/optional.png"))).getImage();
 
         empty = null;
-        graphicMat = new BackJPanel[game.H][game.W];
+        graphicMat = new BackJPanel[gameEngine.H][gameEngine.W];
 
-        for (int i = 0; i < game.H; i++) {
-            for (int j = 0; j < game.W; j++) {
-                if (game.board[i][j] != null) {
-                    switch (game.board[i][j].getOccupant()) {
+        for (int i = 0; i < gameEngine.H; i++) {
+            for (int j = 0; j < gameEngine.W; j++) {
+                if (gameEngine.board[i][j] != null) {
+                    switch (gameEngine.board[i][j].getOccupant()) {
                         case PlayerEnum.COMPUTER:
                             graphicMat[i][j] = new BackJPanel(redMarble, new Point(j, i));
                             break;
@@ -72,11 +72,8 @@ public class GUI extends JFrame implements Runnable {
             }
         }
 
-       
-        // CcMenuBar cMenuBar=new CcMenuBar(cc,this);
-        // setJMenuBar(cMenuBar);
         mainFrame.add(background);
-        game.gameStart();
+        gameEngine.gameStart();
         thread = new Thread(this);
         thread.start();
         mainFrame.setLayout(null);
@@ -84,9 +81,6 @@ public class GUI extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
-
-        // System.out.println("Hello world");
-        // JOptionPane.showMessageDialog(null, "Hello world");
 
         new GUI("Chinese Checker");
 
@@ -108,21 +102,19 @@ public class GUI extends JFrame implements Runnable {
 
         @Override
         public void mouseClicked(MouseEvent arg0) {
-            if (!game.isRunning()) {
+            if (!gameEngine.isRunning()) {
                 JOptionPane.showConfirmDialog(background, "Please select the level", "Start Error",
                         JOptionPane.CLOSED_OPTION, JOptionPane.INFORMATION_MESSAGE);
             } else {
-                if (game.getPlayer() == 2) { // Player
-                    if (game.board[row][col].getOccupant() == game.getPlayer()) {
-                        //System.out.println(col + ", " + row);
-                        
-                        clearOptionals();   //Clearing all optional vertices
+                if (gameEngine.getPlayer() == 2) {
+                    if (gameEngine.board[row][col].getOccupant() == gameEngine.getPlayer()) {
+                        //System.out.println(col + "," + row);
+                        clearOptionals();
 
-                        game.setTempX(col); // x
-                        game.setTempY(row); // y
-                        // cc.resetBoard();
-                        availableVertices = game.checkForPossibleMoves(game.getTempX(), game.getTempY());
-                        game.reset();
+                        gameEngine.setTempX(col);
+                        gameEngine.setTempY(row);
+                        availableVertices = gameEngine.checkForPossibleMoves(gameEngine.getTempX(), gameEngine.getTempY());
+                        gameEngine.reset();
                         for (int i = 0; i < availableVertices.size(); i++) {
                             int x = (int) availableVertices.get(i).getPoint().getX();
                             int y = (int) availableVertices.get(i).getPoint().getY();
@@ -131,15 +123,14 @@ public class GUI extends JFrame implements Runnable {
 
                         mainFrame.repaint();
 
-                    } else if (game.board[row][col].getOccupant() == 0) {   //Move Vertix to empty cell
+                    } else if (gameEngine.board[row][col].getOccupant() == 0) {
 
                         for (int i = 0; i < availableVertices.size(); i++) {
                             int x = (int) availableVertices.get(i).getPoint().getX();
                             int y = (int) availableVertices.get(i).getPoint().getY();
 
-                            if (row == y && col == x) { //Vertix exists
-                                //System.out.println("exists");
-                                game.move(col, row);
+                            if (row == y && col == x) {
+                                gameEngine.move(col, row);
                                 availableVertices.remove(availableVertices.get(i));
                                 break;
                             }
@@ -147,20 +138,16 @@ public class GUI extends JFrame implements Runnable {
 
 
 
-                        //clearOptionals();   //Clearing all optional vertices
-                        
                         
                         updateGame();
-                        game.setActivePlayer(PlayerEnum.COMPUTER);
-                        game.makeBestMove();
+                        gameEngine.setActivePlayer(PlayerEnum.COMPUTER);
+                        gameEngine.makeBestMove();
 
                         updateGame();
-                        game.setActivePlayer(PlayerEnum.PLAYER);
+                        gameEngine.setActivePlayer(PlayerEnum.PLAYER);
 
                         
-                        // cc.endTurn();
                     }
-                    // reImage();
                 }
 
 
@@ -201,10 +188,10 @@ public class GUI extends JFrame implements Runnable {
     }
 
     public void updateGame() {
-        for (int i = 0; i < game.H; i++) {
-            for (int j = 0; j < game.W; j++) {
-                if (game.board[i][j] != null) {
-                    switch (game.board[i][j].getOccupant()) {
+        for (int i = 0; i < gameEngine.H; i++) {
+            for (int j = 0; j < gameEngine.W; j++) {
+                if (gameEngine.board[i][j] != null) {
+                    switch (gameEngine.board[i][j].getOccupant()) {
                         case PlayerEnum.COMPUTER:
                             graphicMat[i][j].setImg(redMarble);
                             break;
@@ -227,23 +214,6 @@ public class GUI extends JFrame implements Runnable {
 
     @Override
     public void run() {
-        while (game.getPlayer() != PlayerEnum.NONE) {
-            /*
-             * if (cc.getPlayer() == 1 && cc.getStatus() == 1) {
-             * //JOptionPane.showConfirmDialog(null, "Computer Thinking.....Done!", "CPU",
-             * JOptionPane.CLOSED_OPTION, JOptionPane.INFORMATION_MESSAGE);
-             * cc.AI();
-             * cc.endTurn();
-             * reImage();
-             * }
-             */
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
     }
 }

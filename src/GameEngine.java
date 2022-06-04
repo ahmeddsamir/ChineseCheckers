@@ -4,7 +4,7 @@ import java.util.*;
 
 import javax.swing.*;
 
-public final class Game {
+public final class GameEngine {
 
     private JFrame frame;
     private JButton easy, medium, hard;
@@ -38,29 +38,23 @@ public final class Game {
 			new Point(11, 13),
 			new Point(13, 13),
 			new Point(15, 13)
-            /*new Point( 4, 24 ),
-            new Point( 4, 22 ),
-            new Point( 5, 23 ),
-            new Point( 4, 20 ),
-            new Point( 5, 21 ),
-            new Point( 6, 22 ),
-            new Point( 4, 18 ),
-            new Point( 5, 19 ),
-            new Point( 6, 20 ),
-            new Point( 7, 21 )*/
     };
 
-	/*public Vertex getGoal(){
+	public Vertex getGoal(){
 		int x,y;
-		for (int i = 0; i < cpuGoal.length; i++) {
-			x = (int)cpuGoal[i].getX();
-			y = (int)cpuGoal[i].getY();
-			if(board[x][y].getOccupant() != 2){
-				return board[x][y];
+		for (int i = 0; i < goalPoints.size(); i++) {
+			x = (int)goalPoints.get(i).getX();
+			y = (int)goalPoints.get(i).getY();
+            if(board[y][x].getOccupant() == 1){
+                goalPoints.remove(i);
+                board[x][y].setAllowedToMove(false);
+            }
+			else if(board[y][x].getOccupant() != 1){
+				return board[y][x];
 			}
 		}
 		return null;
-	}*/
+	}
 
 
     private int tempX = 0;
@@ -105,9 +99,13 @@ public final class Game {
             new Point(13, 3),
             new Point(15, 3)
     };
-    // private int coordIndex;
 
-    public Game() {
+    public ArrayList<Point> goalPoints = new ArrayList<>();
+
+    public GameEngine() {
+        for(Point point : cpuGoal){
+            goalPoints.add(point);
+        }
         for (int i = 0; i < logicMat.length; i++) {
             for (int j = 0; j < logicMat[i].length; j++) {
                 if (this.board[i][j] == null) {
@@ -334,16 +332,13 @@ public final class Game {
 
     public void makeBestMove() {
         ArrayList<Point> result = minimax(board, level, true);
-        //board = fakeMove((int)result.get(0).getX(), (int)result.get(0).getY(), (int)result.get(1).getX(), (int)result.get(1).getY(), board);
         setTempX((int) result.get(0).getX());
         setTempY((int) result.get(0).getY());
         move((int) result.get(1).getX(), (int) result.get(1).getY());
     }
 
 
-    //boolean first = true;
     public ArrayList<Point> minimax(Vertex[][] board, int depth, boolean isMaximizing) {
-        //check for winner
 
         Vertex[][] tmpBoard = new Vertex[board.length][board[0].length];
 
@@ -429,8 +424,25 @@ public final class Game {
         return srcDest;
     }
 
+    //int prevX = 0;
+    //int prevY = 0;
+
+    Vertex goal = null;
     public double getHeuristic(Vertex[][] tmpBoard) {
-		Vertex goal = new Vertex(new Point(12,100));
+
+        try{
+            goal = new Vertex(getGoal().getPoint());
+        }
+        catch(Exception e){
+            for(Point point : cpuGoal){
+                if(board[point.y][point.x].getOccupant() != 1 && !goalPoints.contains(board[point.y][point.x].getPoint())){
+                    goalPoints.add(point);
+                }
+            }
+            goal = new Vertex(getGoal().getPoint());
+        }
+
+        //System.out.println(goal.getPoint());
 
         ArrayList<Vertex> vertices = new ArrayList<Vertex>();
 
@@ -447,6 +459,8 @@ public final class Game {
             sum += Math.sqrt(Math.pow(goal.getPoint().getX() - vertex.getPoint().getX(), 2) + Math.pow(goal.getPoint().getY() - vertex.getPoint().getY(), 2));
         }
 
+        //prevX = (int)goal.getPoint().getX();
+        //prevY = (int)goal.getPoint().getY();
         return sum;
     }
 
