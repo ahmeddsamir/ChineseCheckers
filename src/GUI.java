@@ -122,7 +122,7 @@ public class GUI extends JFrame implements Runnable {
                         game.setTempY(row); // y
                         // cc.resetBoard();
                         availableVertices = game.checkForPossibleMoves(game.getTempX(), game.getTempY());
-                                             
+                        game.reset();
                         for (int i = 0; i < availableVertices.size(); i++) {
                             int x = (int) availableVertices.get(i).getPoint().getX();
                             int y = (int) availableVertices.get(i).getPoint().getY();

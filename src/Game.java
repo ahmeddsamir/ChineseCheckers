@@ -194,7 +194,7 @@ public final class Game {
         if(y > 0 && x > 0 && board[y-1][x-1].getOccupant() == 0){
             valid.add(board[y-1][x-1]);
         }
-        if(y > 0 && x < 23 && board[y-1][x+1].getOccupant() == 0){
+        if(y > 0 && x < 24 && board[y-1][x+1].getOccupant() == 0){
             valid.add(board[y-1][x+1]);
         }
         if(x > 1 && board[y][x-2].getOccupant() == 0){
@@ -203,10 +203,10 @@ public final class Game {
         if(x > 0 && y < 16 && board[y+1][x-1].getOccupant() == 0){
             valid.add(board[y+1][x-1]);
         }
-        if(x < 22 && board[y][x+2].getOccupant() == 0){
+        if(x < 23 && board[y][x+2].getOccupant() == 0){
             valid.add(board[y][x+2]);
         }
-        if(x < 23 && y < 16 && board[y+1][x+1].getOccupant() == 0){
+        if(x < 24 && y < 16 && board[y+1][x+1].getOccupant() == 0){
             valid.add(board[y+1][x+1]);
         }
         //set of vertices
@@ -244,64 +244,103 @@ public final class Game {
 
 
 	ArrayList<Vertex> jump(ArrayList<Vertex> availableVertices, int x, int y) {
-		Vertex JTopRight = board[y-2][x+2];
-		Vertex JTopLeft = board[y-2][x-2];
-		Vertex JRight = board[y][x+4];
-		Vertex JLeft = board[y][x-4];
-		Vertex JBottomRight = board[y+2][x+2];
-		Vertex JBottomLeft = board[y+2][x-2];
+		Vertex topLeft = null;
+		Vertex topRight = null;
+		Vertex left = null;
+		Vertex bottomLeft = null;
+		Vertex right = null;
+		Vertex bottomRight = null;
 
-		Vertex topRight = board[y-1][x+1];
-		Vertex topLeft = board[y-1][x-1];
-		Vertex right = board[y][x+2];
-		Vertex left = board[y][x-2];
-		Vertex bottomRight = board[y+1][x+1];
-		Vertex bottomLeft = board[y+1][x-1];
+		Vertex JTopRight = null;
+		Vertex JTopLeft = null;
+		Vertex JRight = null;
+		Vertex JLeft = null;
+		Vertex JBottomRight = null;
+		Vertex JBottomLeft = null;
+
+		if(y > 0 && x > 0){
+			topLeft = board[y-1][x-1];
+		}
+		if(y > 0 && x < 24){
+			topRight = board[y-1][x+1];
+		}
+		if(x > 1){
+			left = board[y][x-2];
+		}
+		if(x > 0 && y < 16){
+			bottomLeft = board[y+1][x-1];
+		}
+		if(x < 23){
+			right = board[y][x+2];
+		}
+		if(x < 24 && y < 16){
+			bottomRight = board[y+1][x+1];
+		}
+
+
+		if(y > 1 && x < 23){
+			JTopRight = board[y-2][x+2];
+		}
+		if(y > 1 && x > 1){
+			JTopLeft = board[y-2][x-2];
+		}
+		if(x < 21){
+			JRight = board[y][x+4];
+		}
+		if(x > 3){
+			JLeft = board[y][x-4];
+		}
+		if(x < 23 && y < 15){
+			JBottomRight = board[y+2][x+2];
+		}
+		if(x > 1 && y < 15){
+			JBottomLeft = board[y+2][x-2];
+		}
+
 
 		//Law hanbd2 mn topRight, topLeft, Right haydrb: 3lshan homa ely fe el awel m3rfsh leh
-		if (topRight != null && JTopRight != null && topRight.getOccupant() != 0 && JTopRight.getOccupant() == 0 && !JTopRight.isVisited()) {
+		if (topRight != null && JTopRight != null && topRight.getOccupant() != -1 && JTopRight.getOccupant() != -1 && topRight.getOccupant() != 0 && JTopRight.getOccupant() == 0 && !JTopRight.isVisited()) {
 			board[y-2][x+2].setVisited(true);
 			System.out.println("topRight: "+  topRight.getPoint());
 			availableVertices.add(JTopRight);
 			availableVertices = jump(availableVertices, JTopRight.getPoint().x, JTopRight.getPoint().y);
 		}
 
-		if (topLeft.getOccupant() != -1 && JTopLeft != null && topLeft.getOccupant() != 0 && JTopLeft.getOccupant() == 0 && !JTopLeft.isVisited()) {
+		if (topLeft != null && JTopLeft != null && topLeft.getOccupant() != -1 && JTopLeft.getOccupant() != -1 && topLeft.getOccupant() != 0 && JTopLeft.getOccupant() == 0 && !JTopLeft.isVisited()) {
 			board[y-2][x-2].setVisited(true);
 			System.out.println("topLeft: "+  topLeft.getPoint());
 			availableVertices.add(JTopLeft);
 			availableVertices = jump(availableVertices, JTopLeft.getPoint().x, JTopLeft.getPoint().y);
 		}
 
-		if (right.getOccupant() != -1 && JRight.getOccupant() != -1 && right.getOccupant() != 0 && JRight.getOccupant() == 0 && !JRight.isVisited()) {
+		if (right != null && JRight != null && right.getOccupant() != -1 && JRight.getOccupant() != -1 && right.getOccupant() != 0 && JRight.getOccupant() == 0 && !JRight.isVisited()) {
 			board[y][x+4].setVisited(true);
 			System.out.println("right: "+  right.getPoint());
 			availableVertices.add(JRight);
 			availableVertices = jump(availableVertices, JRight.getPoint().x, JRight.getPoint().y);
 		}
 
-		if (left.getOccupant() != -1 && JLeft.getOccupant() != -1 && left.getOccupant() != 0 && JLeft.getOccupant() == 0 && !JLeft.isVisited()) {
+		if (left != null && JLeft != null && left.getOccupant() != -1 && JLeft.getOccupant() != -1 && left.getOccupant() != 0 && JLeft.getOccupant() == 0 && !JLeft.isVisited()) {
 			board[y][x-4].setVisited(true);
 			System.out.println("left: "+  left.getPoint());
 			availableVertices.add(JLeft);
 			availableVertices = jump(availableVertices, JLeft.getPoint().x, JLeft.getPoint().y);
 		}
 
-		if (bottomRight.getOccupant() != -1 && JBottomRight.getOccupant() != -1 && bottomRight.getOccupant() != 0 && JBottomRight.getOccupant() == 0 && !JBottomRight.isVisited()) {
+		if (bottomRight != null && JBottomRight != null && bottomRight.getOccupant() != -1 && JBottomRight.getOccupant() != -1 && bottomRight.getOccupant() != 0 && JBottomRight.getOccupant() == 0 && !JBottomRight.isVisited()) {
 			board[y+2][x+2].setVisited(true);
 			System.out.println("bottomRight: "+  bottomRight.getPoint());
 			availableVertices.add(JBottomRight);
 			availableVertices = jump(availableVertices, JBottomRight.getPoint().x, JBottomRight.getPoint().y);
 		}
 
-		if (bottomLeft.getOccupant() != -1 && JBottomLeft.getOccupant() != -1 && bottomLeft.getOccupant() != 0 && JBottomLeft.getOccupant() == 0 && !JBottomLeft.isVisited()) {
+		if (bottomLeft != null && JBottomLeft != null && bottomLeft.getOccupant() != -1 && JBottomLeft.getOccupant() != -1 && bottomLeft.getOccupant() != 0 && JBottomLeft.getOccupant() == 0 && !JBottomLeft.isVisited()) {
 			board[y+2][x-2].setVisited(true);
 			System.out.println("bottomLeft: "+  bottomLeft.getPoint());
 			availableVertices.add(JBottomLeft);
 			availableVertices = jump(availableVertices, JBottomLeft.getPoint().x, JBottomLeft.getPoint().y);
 		}
 
-		reset();
 		return availableVertices;
 	}
 	
