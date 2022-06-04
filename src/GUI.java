@@ -2,7 +2,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -39,9 +38,9 @@ public class GUI extends JFrame implements Runnable {
 
         redMarble = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/RedMarble.png")))
                 .getImage();
-        blueMarble = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/black_1.png")))
+        blueMarble = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/GreenMarble.png")))
                 .getImage();
-        optional = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/optinal.png"))).getImage();
+        optional = (new ImageIcon(this.getClass().getClassLoader().getResource("Assets/optional.png"))).getImage();
 
         empty = null;
         graphicMat = new BackJPanel[game.H][game.W];
