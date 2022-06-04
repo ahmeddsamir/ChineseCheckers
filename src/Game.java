@@ -38,6 +38,16 @@ public final class Game {
 			new Point(11, 13),
 			new Point(13, 13),
 			new Point(15, 13)
+            /*new Point( 4, 24 ),
+            new Point( 4, 22 ),
+            new Point( 5, 23 ),
+            new Point( 4, 20 ),
+            new Point( 5, 21 ),
+            new Point( 6, 22 ),
+            new Point( 4, 18 ),
+            new Point( 5, 19 ),
+            new Point( 6, 20 ),
+            new Point( 7, 21 )*/
     };
 
 	public Vertex getGoal(){
@@ -389,14 +399,23 @@ public final class Game {
         board[destY][destX].setOccupant(activePlayer);
     }
 
-    public Vertex[][] fakeMove(int srcX, int srcY, int destX, int destY, Vertex[][] tmpBoard) {
+    public Vertex[][] fakeMove(int srcX, int srcY, int destX, int destY, Vertex[][] board) {
+        Vertex[][] tmpBoard = new Vertex[board.length][board[0].length];
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                tmpBoard[i][j] = new Vertex(board[i][j].getPoint(), board[i][j].getOccupant());
+            }
+        }
+
+
         tmpBoard[srcY][srcX].setOccupant(PlayerEnum.NONE);
         tmpBoard[destY][destX].setOccupant(1);
         return tmpBoard;
     }
 
     public void makeBestMove() {
-        ArrayList<Point> result = minimax(board, 4, true);
+        ArrayList<Point> result = minimax(board, 0, true);
         //board = fakeMove((int)result.get(0).getX(), (int)result.get(0).getY(), (int)result.get(1).getX(), (int)result.get(1).getY(), board);
         setTempX((int) result.get(0).getX());
         setTempY((int) result.get(0).getY());
@@ -467,7 +486,7 @@ public final class Game {
                 }
             }
             if (depth > 0) {
-                minimax(fakeMove((int) bestSource.getX(), (int) bestSource.getY(), (int) bestDestination.getX(), (int) bestDestination.getY(), tmpBoard), depth - 1, true);
+                minimax(fakeMove((int) bestSource.getX(), (int) bestSource.getY(), (int) bestDestination.getX(), (int) bestDestination.getY(), tmpBoard), depth - 1, false);
 
             }
 
@@ -498,7 +517,7 @@ public final class Game {
     }
 
     public double getHeuristic(Vertex[][] tmpBoard) {
-		Vertex goal = getGoal();
+		Vertex goal = new Vertex(getGoal().getPoint(), getGoal().getOccupant());
 
         ArrayList<Vertex> vertices = new ArrayList<Vertex>();
 
