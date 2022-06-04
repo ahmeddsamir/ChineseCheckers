@@ -140,7 +140,11 @@ public class GUI extends JFrame implements Runnable {
 
                         
                         updateGame();
+                        if(gameEngine.playerWon()){
+                            JOptionPane.showMessageDialog(null, "Player Won!", "InfoBox: " + "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
+                        }
                         gameEngine.setActivePlayer(PlayerEnum.COMPUTER);
+
                         gameEngine.makeBestMove();
 
                         updateGame();

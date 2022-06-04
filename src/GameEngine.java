@@ -14,17 +14,17 @@ public final class GameEngine {
     public static final int H = 17, W = 25;
     public static Vertex[][] board = new Vertex[H][W];
 
-    private final int[][] win = {
-            {0, 12},
-            {1, 11},
-            {1, 13},
-            {2, 10},
-            {2, 12},
-            {2, 14},
-            {3, 9},
-            {3, 11},
-            {3, 13},
-            {3, 15}
+    private final Point[] humanGoal = {
+            new Point(12,0),
+            new Point(11,1),
+            new Point(13,1),
+            new Point(10,2),
+            new Point(12,2),
+            new Point(14,2),
+            new Point(9, 3),
+            new Point(11,3),
+            new Point(13,3),
+            new Point(15,3)
     };
 
     private final Point[] cpuGoal = {
@@ -47,7 +47,6 @@ public final class GameEngine {
 			y = (int)goalPoints.get(i).getY();
             if(board[y][x].getOccupant() == 1){
                 goalPoints.remove(i);
-                board[x][y].setAllowedToMove(false);
             }
 			else if(board[y][x].getOccupant() != 1){
 				return board[y][x];
@@ -56,6 +55,17 @@ public final class GameEngine {
 		return null;
 	}
 
+    boolean playerWon() {
+        int x,y;
+        for (int i = 0; i < humanGoal.length; i++) {
+            x = (int)humanGoal[i].getX();
+            y = (int)humanGoal[i].getY();
+            if(board[y][x].getOccupant() != 2){
+                return false;
+            }
+        }
+        return true;
+    }
 
     private int tempX = 0;
     private int tempY = 0;
@@ -66,7 +76,6 @@ public final class GameEngine {
 
     private int activePlayer = 2;
     private int level;
-    // public static GraphFacilities graph;
     private int[][] logicMat = {
             {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
             {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 9, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
@@ -86,21 +95,9 @@ public final class GameEngine {
             {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
             {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9},
     };
-    // private Point[][] coordMat;
-    private Point[] cpuSoldiers = new Point[]{
-            new Point(12, 0),
-            new Point(11, 1),
-            new Point(13, 1),
-            new Point(10, 2),
-            new Point(12, 2),
-            new Point(14, 2),
-            new Point(9, 3),
-            new Point(11, 3),
-            new Point(13, 3),
-            new Point(15, 3)
-    };
 
     public ArrayList<Point> goalPoints = new ArrayList<>();
+
 
     public GameEngine() {
         for(Point point : cpuGoal){
@@ -182,8 +179,6 @@ public final class GameEngine {
 
     public ArrayList<Vertex> checkForPossibleMoves(int x, int y) {
         ArrayList<Vertex> valid = new ArrayList<>();
-        ArrayList<Vertex> endPoints = new ArrayList<>();
-        Vertex currentVertex;
         if (y > 0 && x > 0 && board[y - 1][x - 1].getOccupant() == 0) {
             valid.add(board[y - 1][x - 1]);
         }
@@ -351,11 +346,8 @@ public final class GameEngine {
         double bestScore = 0;
         ArrayList<Vertex> aiMarbles = new ArrayList<>();
         ArrayList<Vertex> possibleMoves = new ArrayList<>();
-        ArrayList<Vertex> allPossibleMoves = new ArrayList<>();
         Vertex[][] currentState = null;
         ArrayList<Double> scores = new ArrayList<>();
-        //Point source = new Point(0,0);
-        //Point destination = new Point(0,0);
         ArrayList<Point> destination = new ArrayList<>();
         ArrayList<Point> source = new ArrayList<>();
         ArrayList<Point> srcDest = new ArrayList<>();
@@ -378,13 +370,10 @@ public final class GameEngine {
                 source.add(vertex.getPoint());
                 destination.add(move.getPoint());
             }
-            //allPossibleMoves.addAll(possibleMoves);
-            ////////////////////////////////
         }
         if (isMaximizing) {
             bestScore = Double.MAX_VALUE;
             for (int i = 0; i < scores.size(); i++) {
-                //bestScore = Math.max(bestScore, scores.get(i));
                 if (scores.get(i) < bestScore) {
                     bestScore = scores.get(i);
                     bestSource = source.get(i);
@@ -398,24 +387,19 @@ public final class GameEngine {
 
             }
 
-            //return
         } else {
             bestScore = Double.MIN_VALUE;
             for (int i = 0; i < scores.size(); i++) {
-                //bestScore = Math.max(bestScore, scores.get(i));
                 if (scores.get(i) > bestScore) {
                     bestScore = scores.get(i);
                     bestSource = source.get(i);
                     bestDestination = destination.get(i);
-
-
                 }
             }
             if (depth > 0) {
                 minimax(fakeMove((int) bestSource.getX(), (int) bestSource.getY(), (int) bestDestination.getX(), (int) bestDestination.getY(), tmpBoard), depth - 1, true);
 
             }
-            //return
         }
 
         srcDest.add(bestSource);
@@ -423,9 +407,6 @@ public final class GameEngine {
 
         return srcDest;
     }
-
-    //int prevX = 0;
-    //int prevY = 0;
 
     Vertex goal = null;
     public double getHeuristic(Vertex[][] tmpBoard) {
@@ -442,7 +423,6 @@ public final class GameEngine {
             goal = new Vertex(getGoal().getPoint());
         }
 
-        //System.out.println(goal.getPoint());
 
         ArrayList<Vertex> vertices = new ArrayList<Vertex>();
 
@@ -458,24 +438,9 @@ public final class GameEngine {
         for (Vertex vertex : vertices) {
             sum += Math.sqrt(Math.pow(goal.getPoint().getX() - vertex.getPoint().getX(), 2) + Math.pow(goal.getPoint().getY() - vertex.getPoint().getY(), 2));
         }
-
-        //prevX = (int)goal.getPoint().getX();
-        //prevY = (int)goal.getPoint().getY();
         return sum;
     }
 
-
-
-
-	/*boolean hasWon() {
-
-
-
-		
-	}*/
-
-
-    // Setters and Getters
     public boolean isRunning() {
         return run;
     }
