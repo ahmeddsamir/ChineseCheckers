@@ -359,6 +359,98 @@ public final class Game {
 		board[destY][destX].setOccupant(activePlayer);
 	}
 
+	public Vertex[][] fakeMove(int srcX, int srcY, int destX, int destY, Vertex[][] tmpBoard) {
+		tmpBoard[srcY][srcX].setOccupant(PlayerEnum.NONE);
+		tmpBoard[destY][destX].setOccupant(activePlayer);
+		return tmpBoard;
+	}
+
+	public void makeBestMove(){
+
+	}
+
+	public void minimax(Vertex[][] tmpBoard, int depth, boolean isMaximizing){
+		//check for winner
+		double bestScore = 0;
+		ArrayList<Vertex> aiMarbles = new ArrayList<>();
+		ArrayList<Vertex> possibleMoves = new ArrayList<>();
+		ArrayList<Vertex> allPossibleMoves = new ArrayList<>();
+		Vertex[][] currentState = null;
+		ArrayList<Double> scores = new ArrayList<>();
+		//Point source = new Point(0,0);
+		//Point destination = new Point(0,0);
+		ArrayList<Point> destination = new ArrayList<>();
+		ArrayList<Point> source = new ArrayList<>();
+		Point bestSource = new Point(0,0);
+		Point bestDestination = new Point(0,0);
+
+		for (int i = 0; i < this.H; i++) {
+			for (int j = 0; j < this.W; j++) {
+				if (tmpBoard[i][j] != null && tmpBoard[i][j].getOccupant() == 1) {
+					aiMarbles.add(tmpBoard[i][j]);
+				}
+			}
+		}
+		for(Vertex vertex : aiMarbles){
+			possibleMoves = checkForPossibleMoves((int)vertex.getPoint().getX(), (int)vertex.getPoint().getY());
+			for(Vertex move : possibleMoves){
+				currentState = fakeMove((int)vertex.getPoint().getX(), (int)vertex.getPoint().getY(), (int)move.getPoint().getX(), (int)move.getPoint().getY(), tmpBoard);
+				scores.add(getHeuristic(currentState, new Vertex(new Point(16,18), 1)));
+				source.add(vertex.getPoint());
+				destination.add(move.getPoint());
+			}
+			//allPossibleMoves.addAll(possibleMoves);
+			////////////////////////////////
+		}
+		if(isMaximizing){
+			bestScore = Double.MIN_VALUE;
+			for(int i = 0; i < scores.size(); i++){
+				//bestScore = Math.max(bestScore, scores.get(i));
+				if(scores.get(i) > bestScore){
+					bestScore = scores.get(i);
+					bestSource = source.get(i);
+					bestDestination = destination.get(i);
+				}
+			}
+			if(depth > 0){
+				minimax(fakeMove((int)bestSource.getX(), (int)bestSource.getY(), (int)bestDestination.getX(), (int)bestDestination.getY(), tmpBoard), depth - 1, false);
+			}
+		}
+		else{
+			bestScore = Double.MAX_VALUE;
+			for(int i = 0; i < scores.size(); i++){
+				//bestScore = Math.max(bestScore, scores.get(i));
+				if(scores.get(i) < bestScore){
+					bestScore = scores.get(i);
+					bestSource = source.get(i);
+					bestDestination = destination.get(i);
+				}
+			}
+			if(depth > 0){
+				minimax(fakeMove((int)bestSource.getX(), (int)bestSource.getY(), (int)bestDestination.getX(), (int)bestDestination.getY(), tmpBoard), depth - 1, true);
+			}
+		}
+	}
+
+	public double getHeuristic(Vertex[][] tmpBoard, Vertex goal){
+		ArrayList<Vertex> vertices = new ArrayList<Vertex>();
+
+		for (int i = 0; i < this.H; i++) {
+			for (int j = 0; j < this.W; j++) {
+				if (tmpBoard[i][j] != null && tmpBoard[i][j].getOccupant() == 1) {
+					vertices.add(tmpBoard[i][j]);
+				}
+			}
+		}
+
+		int sum = 0;
+		for (Vertex vertex : vertices) {
+			sum += Math.sqrt(Math.pow(goal.getPoint().getX() - vertex.getPoint().getX(), 2) + Math.pow(goal.getPoint().getY() - vertex.getPoint().getY(), 2));
+		}
+
+		return sum;
+	}
+
 	/*boolean hasWon() {
 
 
